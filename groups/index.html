@@ -147,6 +147,11 @@
     border-radius: 3px; flex-shrink: 0;
   }
   .standings-note strong { color: var(--gold); }
+  .qual-badge {
+    display:inline-block;width:16px;height:16px;line-height:16px;text-align:center;
+    border-radius:50%;margin-left:6px;vertical-align:middle;color:#0A0E1A;
+    font-family:'Roboto Condensed',sans-serif;font-size:10px;font-weight:800;
+  }
 
   /* GROUPS GRID */
   .groups-grid {
@@ -370,9 +375,14 @@
   </div>
 
   <div class="standings-note">
-    <strong>Таблицы будут обновляться по ходу турнира.</strong>
-    Сейчас у всех команд нули &mdash; возвращайтесь после старта группового этапа: <span id="kickoff-date">11 июня 2026 (AEST, UTC+10)</span>.
-    Группы со значком <span style="display:inline-block;width:8px;height:8px;background:#2ECC71;border-radius:50%;vertical-align:middle;margin:0 2px"></span> идут live &mdash; таблицы показаны предварительно.
+    Группы со значком <span style="display:inline-block;width:8px;height:8px;background:#2ECC71;border-radius:50%;vertical-align:middle;margin:0 2px"></span>
+    играют сейчас &mdash; таблицы показаны предварительно.<br>
+    <span style="display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px;">
+      <span style="display:inline-flex;align-items:center;gap:4px;"><span class="qual-badge" style="background:#FFD700;margin-left:0;">1</span> Победитель группы определён</span>
+      <span style="display:inline-flex;align-items:center;gap:4px;"><span class="qual-badge" style="background:#2ECC71;margin-left:0;">Q</span> Выход гарантирован</span>
+      <span style="display:inline-flex;align-items:center;gap:4px;"><span class="qual-badge" style="background:#5DADE2;margin-left:0;">2</span> Второе место определено</span>
+      <span style="display:inline-flex;align-items:center;gap:4px;"><span class="qual-badge" style="background:#E74C3C;margin-left:0;">E</span> Команда выбыла</span>
+    </span>
   </div>
 
   <div class="groups-grid" id="groups-grid"></div>
@@ -490,14 +500,15 @@ function calcStandings(matches) {
 
   // Store all completed match results for head-to-head calculation
   const results = {}; // key: "grp|home|away" -> {hg, ag}
+  const finishedResults = {};
 
   matches.forEach(m => {
     if (m.stage !== 'GROUP_STAGE') return;
-    if (m.status !== 'FINISHED' && m.status !== 'IN_PLAY') return;
+    if (m.status !== 'FINISHED' && m.status !== 'IN_PLAY' && m.status !== 'PAUSED') return;
 
-    const hg = m.score?.fullTime?.home;
-    const ag = m.score?.fullTime?.away;
-    if (hg === null || ag === null) return;
+    const hg = m.score?.fullTime?.home ?? m.score?.halfTime?.home;
+    const ag = m.score?.fullTime?.away ?? m.score?.halfTime?.away;
+    if (hg === null || hg === undefined || ag === null || ag === undefined) return;
 
     const grp = m.group?.replace('GROUP_','');
     if (!grp || !groups[grp]) return;
@@ -508,6 +519,7 @@ function calcStandings(matches) {
 
     // Store result for H2H
     results[`${grp}|${home}|${away}`] = { hg, ag };
+    if (m.status === 'FINISHED') finishedResults[`${grp}|${home}|${away}`] = { hg, ag };
 
     // Update overall stats
     const ht = groups[grp][home];
@@ -525,13 +537,13 @@ function calcStandings(matches) {
   // Track which groups have live matches
   const liveGroups = new Set();
   matches.forEach(m => {
-    if (m.status === 'IN_PLAY' && m.stage === 'GROUP_STAGE') {
+    if ((m.status === 'IN_PLAY' || m.status === 'PAUSED') && m.stage === 'GROUP_STAGE') {
       const grp = m.group?.replace('GROUP_','');
       if (grp) liveGroups.add(grp);
     }
   });
 
-  return { groups, results, liveGroups };
+  return { groups, results, finishedResults, liveGroups };
 }
 
 // ── HEAD-TO-HEAD TIEBREAKER (FIFA 2026 rules) ─────────────────────────────────
@@ -724,18 +736,85 @@ function removeHighlight(idx) {
   if (lastData) render(null, lastData);
 }
 
+function buildScenarioStats(teamNames, matchResults) {
+  const stats = {};
+  teamNames.forEach(t => { stats[t] = {p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0}; });
+  matchResults.forEach(r => {
+    const home=stats[r.home],away=stats[r.away];
+    if(!home||!away)return;
+    home.p++;away.p++;home.gf+=r.hg;home.ga+=r.ag;away.gf+=r.ag;away.ga+=r.hg;
+    if(r.hg>r.ag){home.w++;home.pts+=3;away.l++;}
+    else if(r.hg<r.ag){away.w++;away.pts+=3;home.l++;}
+    else{home.d++;away.d++;home.pts++;away.pts++;}
+  });
+  return stats;
+}
+
+function getFinishedAndRemaining(grp, teamNames, finishedResults) {
+  const finished=[],remaining=[];
+  for(let i=0;i<teamNames.length;i++)for(let j=i+1;j<teamNames.length;j++){
+    const home=teamNames[i],away=teamNames[j];
+    const direct=finishedResults[`${grp}|${home}|${away}`];
+    const reverse=finishedResults[`${grp}|${away}|${home}`];
+    if(direct)finished.push({home,away,...direct});
+    else if(reverse)finished.push({home:away,away:home,...reverse});
+    else remaining.push({home,away});
+  }
+  return {finished,remaining};
+}
+
+function generateScenarios(remaining) {
+  let scenarios=[[]];
+  remaining.forEach(fixture => {
+    const outcomes=[{hg:1,ag:0},{hg:0,ag:0},{hg:0,ag:1}];
+    scenarios=scenarios.flatMap(scenario => outcomes.map(score => [...scenario,{...fixture,...score}]));
+  });
+  return scenarios;
+}
+
+function resultsLookup(grp, matchResults) {
+  const lookup={};
+  matchResults.forEach(r => { lookup[`${grp}|${r.home}|${r.away}`]={hg:r.hg,ag:r.ag}; });
+  return lookup;
+}
+
+function calcGroupBadges(grp, teamNames, finishedResults) {
+  const {finished,remaining}=getFinishedAndRemaining(grp,teamNames,finishedResults);
+  const played=Object.fromEntries(teamNames.map(t=>[t,0]));
+  finished.forEach(r=>{played[r.home]++;played[r.away]++;});
+  if(!teamNames.every(t=>played[t]>=2))return {};
+  const scenarios=generateScenarios(remaining);
+  if(scenarios.length>100)return {};
+  const positions=Object.fromEntries(teamNames.map(t=>[t,new Set()]));
+  scenarios.forEach(scenario=>{
+    const all=[...finished,...scenario];
+    const sorted=sortTeams(teamNames,grp,buildScenarioStats(teamNames,all),resultsLookup(grp,all));
+    sorted.forEach((team,index)=>positions[team].add(index+1));
+  });
+  const badges={};
+  teamNames.forEach(team=>{
+    const seen=positions[team];
+    if(seen.size===1&&seen.has(1))badges[team]='1';
+    else if(seen.size===1&&seen.has(2))badges[team]='2';
+    else if(!seen.has(3)&&!seen.has(4))badges[team]='Q';
+    else if(seen.size===1&&seen.has(4))badges[team]='E';
+  });
+  return badges;
+}
+
 let lastData = null;
 
 function render(highlightTeam, data) {
   const grid = document.getElementById('groups-grid');
   grid.innerHTML = '';
 
-  const { groups, results, liveGroups } = data || calcStandings([]);
+  const { groups, results, finishedResults, liveGroups } = data || calcStandings([]);
   const sortedGroups = {};
 
   Object.entries(GROUPS).forEach(([grp, teamList]) => {
     const groupStats = groups[grp] || {};
     const sorted = sortTeams(teamList, grp, groupStats, results);
+    const badges = calcGroupBadges(grp, teamList, finishedResults || {});
     sortedGroups[grp] = sorted;
     const color = GROUP_COLORS[grp];
     const card = document.createElement('div');
@@ -753,10 +832,14 @@ function render(highlightTeam, data) {
       const hiIdx = _highlightTeams.findIndex(t => t && t !== 'none' && t === name);
       const isHi = hiIdx >= 0;
       const hiCls = isHi ? ` highlighted hi-${hiIdx+1}` : '';
+      const badge=badges[name];
+      const badgeColor=badge==='1'?'#FFD700':badge==='Q'?'#2ECC71':badge==='2'?'#5DADE2':'#E74C3C';
+      const badgeTitle=badge==='1'?'Победитель группы определён':badge==='Q'?'Выход гарантирован':badge==='2'?'Второе место определено':'Команда выбыла';
+      const badgeHtml=badge?`<span class="qual-badge" style="background:${badgeColor}" title="${badgeTitle}">${badge}</span>`:'';
 
       rows += `<tr class="${hiCls}">
         <td class="stat" style="width:20px;padding-left:8px">${i+1}</td>
-        <td class="team-name">${flagImg(name)}${teamName(name)}</td>
+        <td class="team-name">${flagImg(name)}${teamName(name)}${badgeHtml}</td>
         <td class="stat">${s.p}</td>
         <td class="stat">${s.p > 0 ? s.w : '-'}</td>
         <td class="stat">${s.p > 0 ? s.d : '-'}</td>

@@ -337,7 +337,13 @@ function teams(m){
       phh='TBD'; pha='TBD';
     }
   }
-  return { h:hn||phh, a:an||pha, hph:!hn, aph:!an };
+  const resolvedHome=hn||phh, resolvedAway=an||pha;
+  return {
+    h:resolvedHome,
+    a:resolvedAway,
+    hph:!hn && !FLAGS[resolvedHome],
+    aph:!an && !FLAGS[resolvedAway]
+  };
 }
 
 function scoreSuffix(m){
