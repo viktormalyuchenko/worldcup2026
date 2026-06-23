@@ -65,8 +65,8 @@ jobs:
               status = m.get('status')
               if status in ('IN_PLAY', 'PAUSED'):
                   to_fetch.append(mid)               # always refresh live matches
-              elif status == 'FINISHED' and mid not in details:
-                  to_fetch.append(mid)               # fetch once, never again
+              elif status == 'FINISHED' and (mid not in details or details.get(mid, {}).get('status') != 'FINISHED'):
+                  to_fetch.append(mid)               # refresh once after the final whistle
 
           print(f"Matches needing detail fetch: {len(to_fetch)}")
 
