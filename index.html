@@ -4678,6 +4678,7 @@ function normalise(name) {
 // scoreMap: keyed by "HomeTeam|AwayTeam" -> score/status metadata
 let scoreMap = {};
 let statusByKickoff = {};
+let scoreById = {};
 let matchDetails = {};
 let groupWinners = {};
 let lastFetch = null;
@@ -4701,23 +4702,31 @@ async function loadScores() {
     }
     scoreMap = {};
     statusByKickoff = {};
+    scoreById = {};
     (data.matches || []).forEach(m => {
       const home = normalise(m.homeTeam.shortName || m.homeTeam.name || '');
       const away = normalise(m.awayTeam.shortName || m.awayTeam.name || '');
       if (!home || !away) return;
       const key = home + '|' + away;
       const details = matchDetails[String(m.id)] || {};
-      const status = details.status || m.status;
-      const hg = details.score?.fullTime?.home ?? m.score?.fullTime?.home;
-      const ag = details.score?.fullTime?.away ?? m.score?.fullTime?.away;
-      scoreMap[key] = {
+      const status = m.status || details.status;
+      const isLive = status === 'IN_PLAY' || status === 'PAUSED';
+      const hg = isLive
+        ? details.score?.fullTime?.home ?? m.score?.fullTime?.home
+        : m.score?.fullTime?.home ?? details.score?.fullTime?.home;
+      const ag = isLive
+        ? details.score?.fullTime?.away ?? m.score?.fullTime?.away
+        : m.score?.fullTime?.away ?? details.score?.fullTime?.away;
+      const scoreEntry = {
         home: hg,
         away: ag,
         status,
-        minute: details.minute ?? m.minute,
-        injuryTime: details.injuryTime ?? m.injuryTime,
+        minute: isLive ? details.minute ?? m.minute : m.minute,
+        injuryTime: isLive ? details.injuryTime ?? m.injuryTime : m.injuryTime,
         id: m.id
       };
+      scoreMap[key] = scoreEntry;
+      scoreById[String(m.id)] = scoreEntry;
       if (m.utcDate) statusByKickoff[m.utcDate.slice(0, 16)] = status;
     });
     lastFetch = new Date();
@@ -4781,15 +4790,18 @@ function eventMinute(event){
 }
 function showMatchPopover(button){
   closeMatchPopover();
-  const details=matchDetails[String(button.dataset.matchId)]||null;
+  const matchId=String(button.dataset.matchId);
+  const details=matchDetails[matchId]||null;
+  const summary=scoreById[matchId]||null;
   const city=(button.dataset.info||'').replace(/^Город:\s*/,'');
   if(!details){return;}
   const goals=details.goals||[],cards=details.bookings||[],subs=details.substitutions||[];
-  const score=details.score?.fullTime;
+  const status=summary?.status||details.status;
+  const score={home:summary?.home??details.score?.fullTime?.home,away:summary?.away??details.score?.fullTime?.away};
   const rows=(items,renderer)=>items.map(renderer).join('');
   const cardText=card=>card==='RED'?'КК':card==='YELLOW'?'ЖК':card||'';
   const html=`<div class="match-popover" role="dialog" aria-label="События матча">
-    <h3>${score?.home??'-'} : ${score?.away??'-'} ${details.status==='IN_PLAY'?'· идет':details.status==='PAUSED'?'· перерыв':details.status==='FINISHED'?'· завершен':''}</h3>
+    <h3>${score.home??'-'} : ${score.away??'-'} ${status==='IN_PLAY'?'· идет':status==='PAUSED'?'· перерыв':status==='FINISHED'?'· завершен':''}</h3>
     <div class="pop-meta">${escAttr(city)}</div>
     ${goals.length?`<div class="pop-title">Голы</div>${rows(goals,g=>`<div class="pop-row"><span class="pop-min">${eventMinute(g)}</span><span><strong>${escAttr(g.scorer?.name||'')}</strong>${g.assist?.name?`<br><span style="color:var(--text-muted)">Передача: ${escAttr(g.assist.name)}</span>`:''}</span></div>`)}`:''}
     ${cards.length?`<div class="pop-title">Карточки</div>${rows(cards,c=>`<div class="pop-row"><span class="pop-min">${eventMinute(c)}</span><span><strong>${cardText(c.card)}</strong> ${escAttr(c.player?.name||'')}</span></div>`)}`:''}
