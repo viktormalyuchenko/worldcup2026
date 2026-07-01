@@ -233,7 +233,7 @@ function labelName(label){
     .replace(/\b3rd ([A-L/]+)\b/g, '3-е место $1');
 }
 const FEEDERS = {
-  537376:['M74','M77'],537375:['M73','M75'],537377:['M76','M78'],537378:['M79','M80'],
+  537375:['M74','M77'],537376:['M73','M75'],537377:['M76','M78'],537378:['M79','M80'],
   537379:['M83','M84'],537380:['M81','M82'],537381:['M86','M88'],537382:['M85','M87'],
   537383:['M89','M90'],537384:['M93','M94'],537385:['M91','M92'],537386:['M95','M96'],
   537387:['M97','M98'],537388:['M99','M100'],537390:['M101','M102'],537389:['M101','M102'],
@@ -241,58 +241,48 @@ const FEEDERS = {
 // R32 group placeholders (Wikipedia official)
 const R32_PH = {
   537417: ['2nd Group A', '2nd Group B'],
-  537423: ['Win Group E', '3rd A/B/C/D/F'],
-  537415: ['Win Group F', '2nd Group C'],
-  537418: ['Win Group C', '2nd Group F'],
-  537424: ['Win Group I', '3rd C/D/F/G/H'],
-  537416: ['2nd Group E', '2nd Group I'],
+  537415: ['Win Group E', '3rd A/B/C/D/F'],
+  537418: ['Win Group F', '2nd Group C'],
+  537423: ['Win Group C', '2nd Group F'],
+  537416: ['Win Group I', '3rd C/D/F/G/H'],
+  537424: ['2nd Group E', '2nd Group I'],
   537425: ['Win Group A', '3rd C/E/F/H/I'],
   537426: ['Win Group L', '3rd E/H/I/J/K'],
-  537422: ['Win Group D', '3rd B/E/F/I/J'],
-  537421: ['Win Group G', '3rd A/E/H/I/J'],
-  537420: ['2nd Group K', '2nd Group L'],
-  537419: ['Win Group H', '2nd Group J'],
+  537421: ['Win Group D', '3rd B/E/F/I/J'],
+  537422: ['Win Group G', '3rd A/E/H/I/J'],
+  537419: ['2nd Group K', '2nd Group L'],
+  537420: ['Win Group H', '2nd Group J'],
   537429: ['Win Group B', '3rd E/F/G/I/J'],
-  537428: ['Win Group J', '2nd Group H'],
-  537427: ['Win Group K', '3rd D/E/I/J/L'],
-  537430: ['2nd Group D', '2nd Group G'],
-};
-
-const PH = {
-  537417:['2nd A','2nd B'],      537423:['Win C','2nd F'],
-  537415:['Win E','3rd A/B/C/D/F'], 537418:['Win F','2nd C'],
-  537424:['2nd E','2nd I'],      537416:['Win I','3rd C/D/F/G/H'],
-  537425:['Win A','3rd C/E/F/H/I'], 537426:['Win L','3rd E/H/I/J/K'],
-  537422:['Win G','3rd A/E/H/I/J'], 537421:['Win D','3rd B/E/F/I/J'],
-  537420:['Win H','2nd J'],      537419:['2nd K','2nd L'],
-  537429:['Win B','3rd D/E/I/J/L'], 537428:['2nd D','2nd G'],
-  537427:['Win J','2nd H'],      537430:['Win K','3rd D/E/I/J/L']
+  537427: ['Win Group J', '2nd Group H'],
+  537430: ['Win Group K', '3rd D/E/I/J/L'],
+  537428: ['2nd Group D', '2nd Group G'],
 };
 
 // Hardcoded matches - always renders even without data.json
 const BASE = [
-  {id:537417,stage:'LAST_32',utcDate:'2026-06-28T19:00:00Z'},{id:537423,stage:'LAST_32',utcDate:'2026-06-29T17:00:00Z'},
-  {id:537415,stage:'LAST_32',utcDate:'2026-06-29T20:30:00Z'},{id:537418,stage:'LAST_32',utcDate:'2026-06-30T01:00:00Z'},
-  {id:537424,stage:'LAST_32',utcDate:'2026-06-30T17:00:00Z'},{id:537416,stage:'LAST_32',utcDate:'2026-06-30T21:00:00Z'},
-  {id:537425,stage:'LAST_32',utcDate:'2026-07-01T01:00:00Z'},{id:537426,stage:'LAST_32',utcDate:'2026-07-01T16:00:00Z'},
-  {id:537422,stage:'LAST_32',utcDate:'2026-07-01T20:00:00Z'},{id:537421,stage:'LAST_32',utcDate:'2026-07-02T00:00:00Z'},
-  {id:537420,stage:'LAST_32',utcDate:'2026-07-02T19:00:00Z'},{id:537419,stage:'LAST_32',utcDate:'2026-07-02T23:00:00Z'},
-  {id:537429,stage:'LAST_32',utcDate:'2026-07-03T03:00:00Z'},{id:537428,stage:'LAST_32',utcDate:'2026-07-03T18:00:00Z'},
-  {id:537427,stage:'LAST_32',utcDate:'2026-07-03T22:00:00Z'},{id:537430,stage:'LAST_32',utcDate:'2026-07-04T01:30:00Z'},
-  {id:537376,stage:'LAST_16',utcDate:'2026-07-04T17:00:00Z'},{id:537375,stage:'LAST_16',utcDate:'2026-07-04T21:00:00Z'},
-  {id:537377,stage:'LAST_16',utcDate:'2026-07-05T20:00:00Z'},{id:537378,stage:'LAST_16',utcDate:'2026-07-06T00:00:00Z'},
-  {id:537379,stage:'LAST_16',utcDate:'2026-07-06T19:00:00Z'},{id:537380,stage:'LAST_16',utcDate:'2026-07-07T00:00:00Z'},
-  {id:537381,stage:'LAST_16',utcDate:'2026-07-07T16:00:00Z'},{id:537382,stage:'LAST_16',utcDate:'2026-07-07T20:00:00Z'},
-  {id:537383,stage:'QUARTER_FINALS',utcDate:'2026-07-09T20:00:00Z'},{id:537384,stage:'QUARTER_FINALS',utcDate:'2026-07-10T19:00:00Z'},
-  {id:537385,stage:'QUARTER_FINALS',utcDate:'2026-07-11T21:00:00Z'},{id:537386,stage:'QUARTER_FINALS',utcDate:'2026-07-12T01:00:00Z'},
-  {id:537387,stage:'SEMI_FINALS',utcDate:'2026-07-14T19:00:00Z'},{id:537388,stage:'SEMI_FINALS',utcDate:'2026-07-15T19:00:00Z'},
-  {id:537389,stage:'THIRD_PLACE',utcDate:'2026-07-18T21:00:00Z'},
-  {id:537390,stage:'FINAL',utcDate:'2026-07-19T19:00:00Z'}
+  {id:537417,mnum:'M73',stage:'LAST_32',utcDate:'2026-06-28T19:00:00Z'},{id:537415,mnum:'M74',stage:'LAST_32',utcDate:'2026-06-29T20:30:00Z'},
+  {id:537418,mnum:'M75',stage:'LAST_32',utcDate:'2026-06-30T01:00:00Z'},{id:537423,mnum:'M76',stage:'LAST_32',utcDate:'2026-06-29T17:00:00Z'},
+  {id:537416,mnum:'M77',stage:'LAST_32',utcDate:'2026-06-30T21:00:00Z'},{id:537424,mnum:'M78',stage:'LAST_32',utcDate:'2026-06-30T17:00:00Z'},
+  {id:537425,mnum:'M79',stage:'LAST_32',utcDate:'2026-07-01T01:00:00Z'},{id:537426,mnum:'M80',stage:'LAST_32',utcDate:'2026-07-01T16:00:00Z'},
+  {id:537421,mnum:'M81',stage:'LAST_32',utcDate:'2026-07-02T00:00:00Z'},{id:537422,mnum:'M82',stage:'LAST_32',utcDate:'2026-07-01T20:00:00Z'},
+  {id:537419,mnum:'M83',stage:'LAST_32',utcDate:'2026-07-02T23:00:00Z'},{id:537420,mnum:'M84',stage:'LAST_32',utcDate:'2026-07-02T19:00:00Z'},
+  {id:537429,mnum:'M85',stage:'LAST_32',utcDate:'2026-07-03T03:00:00Z'},{id:537427,mnum:'M86',stage:'LAST_32',utcDate:'2026-07-03T22:00:00Z'},
+  {id:537430,mnum:'M87',stage:'LAST_32',utcDate:'2026-07-04T01:30:00Z'},{id:537428,mnum:'M88',stage:'LAST_32',utcDate:'2026-07-03T18:00:00Z'},
+  {id:537375,mnum:'M89',stage:'LAST_16',utcDate:'2026-07-04T21:00:00Z'},{id:537376,mnum:'M90',stage:'LAST_16',utcDate:'2026-07-04T17:00:00Z'},
+  {id:537377,mnum:'M91',stage:'LAST_16',utcDate:'2026-07-05T20:00:00Z'},{id:537378,mnum:'M92',stage:'LAST_16',utcDate:'2026-07-06T00:00:00Z'},
+  {id:537379,mnum:'M93',stage:'LAST_16',utcDate:'2026-07-06T19:00:00Z'},{id:537380,mnum:'M94',stage:'LAST_16',utcDate:'2026-07-07T00:00:00Z'},
+  {id:537381,mnum:'M95',stage:'LAST_16',utcDate:'2026-07-07T16:00:00Z'},{id:537382,mnum:'M96',stage:'LAST_16',utcDate:'2026-07-07T20:00:00Z'},
+  {id:537383,mnum:'M97',stage:'QUARTER_FINALS',utcDate:'2026-07-09T20:00:00Z'},{id:537384,mnum:'M98',stage:'QUARTER_FINALS',utcDate:'2026-07-10T19:00:00Z'},
+  {id:537385,mnum:'M99',stage:'QUARTER_FINALS',utcDate:'2026-07-11T21:00:00Z'},{id:537386,mnum:'M100',stage:'QUARTER_FINALS',utcDate:'2026-07-12T01:00:00Z'},
+  {id:537387,mnum:'M101',stage:'SEMI_FINALS',utcDate:'2026-07-14T19:00:00Z'},{id:537388,mnum:'M102',stage:'SEMI_FINALS',utcDate:'2026-07-15T19:00:00Z'},
+  {id:537389,mnum:'M103',stage:'THIRD_PLACE',utcDate:'2026-07-18T21:00:00Z'},
+  {id:537390,mnum:'M104',stage:'FINAL',utcDate:'2026-07-19T19:00:00Z'}
 ].map(m => ({...m, status:'TIMED', homeTeam:{name:null,shortName:null}, awayTeam:{name:null,shortName:null}, score:{fullTime:{home:null,away:null}}}));
 
 let matches = BASE.map(m => ({...m}));
 let groupWinners = {};
 const mnums = {};
+const mnumToId = {};
 
 function norm(n){ return n ? (NAME_MAP[n]||n) : null; }
 function flag(t){
@@ -356,55 +346,86 @@ function scoreSuffix(m){
 function mbox(m, off){
   const {h,a,hph,aph}=teams(m);
   const fin=m.status==='FINISHED';
-  const hg=m.score?.fullTime?.home, ag=m.score?.fullTime?.away;
+  const live=m.status==='IN_PLAY'||m.status==='PAUSED';
+  const isPenalty=m.score?.duration==='PENALTY_SHOOTOUT';
+  const hg=isPenalty?m.score?.regularTime?.home:m.score?.fullTime?.home;
+  const ag=isPenalty?m.score?.regularTime?.away:m.score?.fullTime?.away;
   const winner=m.score?.winner;
   const hw=fin&&(winner==='HOME_TEAM'||(winner==null&&hg!=null&&hg>ag));
   const aw=fin&&(winner==='AWAY_TEAM'||(winner==null&&ag!=null&&ag>hg));
   const num=mnums[m.id]||'';
   const dt=fmt(m.utcDate,off);
   const dur=m.score?.duration||'';
-  const suf=dur==='PENALTY_SHOOTOUT'?'p':dur==='EXTRA_TIME'?'aet':'';
+  const penHome=isPenalty?m.score?.penalties?.home:null,penAway=isPenalty?m.score?.penalties?.away:null;
+  const statusLabel=live?(m.status==='PAUSED'?'перерыв':m.minute?`${m.minute}${m.injuryTime?'+'+m.injuryTime:''}'`:'идет'):fin?(isPenalty&&penHome!=null?`${penHome}:${penAway} пен.`:dur==='EXTRA_TIME'?'д.в.':'зав.'):'';
   const tr=(n,ph,w,sc)=>`<div class="mbt2${w?' w':''}${ph?' ph':''}">
     ${!ph?flag(n):''}
     <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${labelName(n)}</span>
-    ${sc!=null?`<span class="sc">${sc}${w&&suf?suf:''}</span>`:''}
+    ${sc!=null?`<span class="sc">${sc}</span>`:''}
   </div>`;
   return `<div class="mb${fin?' fin':''}">
-    <div class="mbnum"><span>${num}</span><span class="mbt">${dt}</span></div>
-    ${tr(h,hph,hw,fin?hg:null)}
-    ${tr(a,aph,aw,fin?ag:null)}
+    <div class="mbnum"><span>${num}${statusLabel?` <small style="color:${live?'#2ECC71':'var(--text-muted)'}">${statusLabel}</small>`:''}</span><span class="mbt">${dt}</span></div>
+    ${tr(h,hph,hw,(fin||live)?hg:null)}
+    ${tr(a,aph,aw,(fin||live)?ag:null)}
   </div>`;
 }
 
 function mobMatch(m, off){
   const {h,a,hph,aph}=teams(m);
   const fin=m.status==='FINISHED';
-  const hg=m.score?.fullTime?.home, ag=m.score?.fullTime?.away;
+  const live=m.status==='IN_PLAY'||m.status==='PAUSED';
+  const isPenalty=m.score?.duration==='PENALTY_SHOOTOUT';
+  const hg=isPenalty?m.score?.regularTime?.home:m.score?.fullTime?.home;
+  const ag=isPenalty?m.score?.regularTime?.away:m.score?.fullTime?.away;
   const winner=m.score?.winner;
   const hw=fin&&(winner==='HOME_TEAM'||(winner==null&&hg!=null&&hg>ag));
   const aw=fin&&(winner==='AWAY_TEAM'||(winner==null&&ag!=null&&ag>hg));
   const num=mnums[m.id]||'';
   const dt=fmt(m.utcDate,off);
   const dur=m.score?.duration||'';
-  const suf=dur==='PENALTY_SHOOTOUT'?'p':dur==='EXTRA_TIME'?'aet':'';
+  const penHome=isPenalty?m.score?.penalties?.home:null,penAway=isPenalty?m.score?.penalties?.away:null;
+  const statusLabel=live?(m.status==='PAUSED'?'перерыв':m.minute?`${m.minute}${m.injuryTime?'+'+m.injuryTime:''}'`:'идет'):fin?(isPenalty&&penHome!=null?`${penHome}:${penAway} пен.`:dur==='EXTRA_TIME'?'д.в.':'зав.'):'';
   const tr=(n,ph,w,sc)=>`<div class="mmt${w?' w':''}${ph?' ph':''}">
     ${!ph?flag(n):''}
     <span style="flex:1">${labelName(n)}</span>
-    ${sc!=null?`<span class="sc">${sc}${w&&suf?`<span style="font-size:10px;color:#8A93B8;font-weight:600">${suf}</span>`:''}</span>`:''}
+    ${sc!=null?`<span class="sc">${sc}</span>`:''}
   </div>`;
   return `<div class="mm${fin?' fin':''}">
-    <div class="mmh"><span class="mnum">${num}</span><span>${dt}</span></div>
-    ${tr(h,hph,hw,fin?hg:null)}
-    ${tr(a,aph,aw,fin?ag:null)}
+    <div class="mmh"><span class="mnum">${num}${statusLabel?` <small style="color:${live?'#2ECC71':'var(--text-muted)'}">${statusLabel}</small>`:''}</span><span>${dt}</span></div>
+    ${tr(h,hph,hw,(fin||live)?hg:null)}
+    ${tr(a,aph,aw,(fin||live)?ag:null)}
   </div>`;
 }
 
 function byStage(s){ return matches.filter(m=>m.stage===s).sort((a,b)=>new Date(a.utcDate)-new Date(b.utcDate)); }
 
 function buildNums(){
-  let n=73;
-  ['LAST_32','LAST_16','QUARTER_FINALS','SEMI_FINALS','THIRD_PLACE','FINAL'].forEach(s=>{
-    byStage(s).forEach(m=>{ mnums[m.id]='M'+n++; });
+  BASE.forEach(m=>{mnums[m.id]=m.mnum;mnumToId[m.mnum]=m.id;});
+}
+
+function resolveWinner(mnum){
+  const match=matches.find(item=>item.id===mnumToId[mnum]);
+  if(!match||match.status!=='FINISHED')return null;
+  if(match.score?.winner==='HOME_TEAM')return match.homeTeam?.shortName||match.homeTeam?.name||null;
+  if(match.score?.winner==='AWAY_TEAM')return match.awayTeam?.shortName||match.awayTeam?.name||null;
+  const home=match.score?.fullTime?.home,away=match.score?.fullTime?.away;
+  if(home>away)return match.homeTeam?.shortName||match.homeTeam?.name||null;
+  if(away>home)return match.awayTeam?.shortName||match.awayTeam?.name||null;
+  return null;
+}
+
+function resolveKnockoutTeams(){
+  matches.forEach(match=>{
+    const feeders=FEEDERS[match.id];
+    if(!feeders)return;
+    if(!match.homeTeam?.name){
+      const winner=resolveWinner(feeders[0]);
+      if(winner)match.homeTeam={name:winner,shortName:winner};
+    }
+    if(!match.awayTeam?.name){
+      const winner=resolveWinner(feeders[1]);
+      if(winner)match.awayTeam={name:winner,shortName:winner};
+    }
   });
 }
 
@@ -414,36 +435,28 @@ function render(){
   const fin=byStage('FINAL'), tp=byStage('THIRD_PLACE');
 
   // Build ordered arrays by explicit match ID order so bracket flows correctly
-  // Match ID -> Match Number mapping (sorted by utcDate):
-  // M73=537417 M74=537423 M75=537415 M76=537418 M77=537424 M78=537416
-  // M79=537425 M80=537426 M81=537422 M82=537421 M83=537420 M84=537419
-  // M85=537429 M86=537428 M87=537427 M88=537430
-  // M89=537376 M90=537375 M91=537377 M92=537378
-  // M93=537379 M94=537380 M95=537381 M96=537382
-  // M97=537383 M98=537384 M99=537385 M100=537386
-
   function mById(id){ return matches.find(m=>m.id===id); }
 
   // R32 left side pairs (top feeds M89, then M90, M91, M92)
   // Left side: M73-M80 (ordered so pairs feeding same R16 are adjacent)
   const r32L=[
-    mById(537423),mById(537424), // M74+M77 -> M89
-    mById(537417),mById(537415), // M73+M75 -> M90
-    mById(537420),mById(537419), // M83+M84 -> M93
-    mById(537422),mById(537421), // M81+M82 -> M94
+    mById(537415),mById(537416), // M74+M77 -> M89
+    mById(537417),mById(537418), // M73+M75 -> M90
+    mById(537419),mById(537420), // M83+M84 -> M93
+    mById(537421),mById(537422), // M81+M82 -> M94
   ].filter(Boolean);
 
   // Right side: M81-M88 (ordered so pairs feeding same R16 are adjacent)
   const r32R=[
-    mById(537418),mById(537416), // M76+M78 -> M91
+    mById(537423),mById(537424), // M76+M78 -> M91
     mById(537425),mById(537426), // M79+M80 -> M92
-    mById(537428),mById(537430), // M86+M88 -> M95
-    mById(537429),mById(537427), // M85+M87 -> M96
+    mById(537427),mById(537428), // M86+M88 -> M95
+    mById(537429),mById(537430), // M85+M87 -> M96
   ].filter(Boolean);
 
   // R16 left side pairs (M89+M90 -> M97, M91+M92 -> M98)
   const r16L=[
-    mById(537376),mById(537375), // M89+M90 -> M97
+    mById(537375),mById(537376), // M89+M90 -> M97
     mById(537379),mById(537380), // M93+M94 -> M98
   ].filter(Boolean);
 
@@ -653,9 +666,10 @@ async function load(){
         const groupsComplete=new Date()>new Date('2026-06-28T19:00:00Z');
         const homeTeam=(isLast32&&!groupsComplete)?{name:null,shortName:null}:m.homeTeam;
         const awayTeam=(isLast32&&!groupsComplete)?{name:null,shortName:null}:m.awayTeam;
-        byId[m.id]={...byId[m.id],homeTeam,awayTeam,score:m.score,status:m.status};
+        byId[m.id]={...byId[m.id],homeTeam,awayTeam,score:m.score,status:m.status,minute:m.minute,injuryTime:m.injuryTime};
       });
       matches=BASE.map(m=>byId[m.id]||m);
+      resolveKnockoutTeams();
       render();
     }
   }catch(e){ console.log('data.json:',e.message); }

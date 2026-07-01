@@ -381,6 +381,7 @@
       <span style="display:inline-flex;align-items:center;gap:4px;"><span class="qual-badge" style="background:#FFD700;margin-left:0;">1</span> Победитель группы определён</span>
       <span style="display:inline-flex;align-items:center;gap:4px;"><span class="qual-badge" style="background:#2ECC71;margin-left:0;">Q</span> Выход гарантирован</span>
       <span style="display:inline-flex;align-items:center;gap:4px;"><span class="qual-badge" style="background:#5DADE2;margin-left:0;">2</span> Второе место определено</span>
+      <span style="display:inline-flex;align-items:center;gap:4px;"><span class="qual-badge" style="background:#F39C12;margin-left:0;">3</span> Выход с третьего места</span>
       <span style="display:inline-flex;align-items:center;gap:4px;"><span class="qual-badge" style="background:#E74C3C;margin-left:0;">E</span> Команда выбыла</span>
     </span>
   </div>
@@ -809,13 +810,25 @@ function render(highlightTeam, data) {
   grid.innerHTML = '';
 
   const { groups, results, finishedResults, liveGroups } = data || calcStandings([]);
-  const sortedGroups = {};
+  const groupEntries = Object.entries(GROUPS);
+  const sortedGroups = Object.fromEntries(groupEntries.map(([grp, teamList]) => [
+    grp,
+    sortTeams(teamList, grp, groups[grp] || {}, results)
+  ]));
+  const groupStageComplete = groupEntries.every(([grp, teamList]) =>
+    teamList.every(team => (groups[grp]?.[team]?.p || 0) === 3)
+  );
+  const thirdPlaceRanking = groupEntries.map(([grp]) => {
+    const team = sortedGroups[grp][2];
+    const s = groups[grp][team];
+    return {team, pts:s.pts, gd:s.gf-s.ga, gf:s.gf};
+  }).sort((a,b) => b.pts-a.pts || b.gd-a.gd || b.gf-a.gf || a.team.localeCompare(b.team));
+  const qualifiedThird = new Set(groupStageComplete ? thirdPlaceRanking.slice(0,8).map(t => t.team) : []);
 
-  Object.entries(GROUPS).forEach(([grp, teamList]) => {
+  groupEntries.forEach(([grp, teamList]) => {
     const groupStats = groups[grp] || {};
-    const sorted = sortTeams(teamList, grp, groupStats, results);
+    const sorted = sortedGroups[grp];
     const badges = calcGroupBadges(grp, teamList, finishedResults || {});
-    sortedGroups[grp] = sorted;
     const color = GROUP_COLORS[grp];
     const card = document.createElement('div');
     card.className = 'group-card';
@@ -832,9 +845,11 @@ function render(highlightTeam, data) {
       const hiIdx = _highlightTeams.findIndex(t => t && t !== 'none' && t === name);
       const isHi = hiIdx >= 0;
       const hiCls = isHi ? ` highlighted hi-${hiIdx+1}` : '';
-      const badge=badges[name];
-      const badgeColor=badge==='1'?'#FFD700':badge==='Q'?'#2ECC71':badge==='2'?'#5DADE2':'#E74C3C';
-      const badgeTitle=badge==='1'?'Победитель группы определён':badge==='Q'?'Выход гарантирован':badge==='2'?'Второе место определено':'Команда выбыла';
+      let badge=badges[name];
+      if(groupStageComplete&&i===2)badge=qualifiedThird.has(name)?'3':'E';
+      if(groupStageComplete&&i===3)badge='E';
+      const badgeColor=badge==='1'?'#FFD700':badge==='Q'?'#2ECC71':badge==='2'?'#5DADE2':badge==='3'?'#F39C12':'#E74C3C';
+      const badgeTitle=badge==='1'?'Победитель группы определён':badge==='Q'?'Выход гарантирован':badge==='2'?'Второе место определено':badge==='3'?'Выход с третьего места':'Команда выбыла';
       const badgeHtml=badge?`<span class="qual-badge" style="background:${badgeColor}" title="${badgeTitle}">${badge}</span>`:'';
 
       rows += `<tr class="${hiCls}">
